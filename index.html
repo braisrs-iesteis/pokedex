@@ -202,11 +202,12 @@ document.addEventListener("keyup", (e) => {
       window.location.href = "/";
       break;
     case "ArrowLeft":
-      if(currentPokemon == -1 || currentPokemon === 1){ return; }
+      if(currentPokemon == -1 || currentPokemon < 1){ return; }
       window.location.href = "/?id=" + (currentPokemon - 1);
       break;
     case "ArrowRight":
-      if(currentPokemon == -1 || currentPokemon === POKEMONS.length){ return; }
+      if(currentPokemon == -1 || currentPokemon >= POKEMONS.length){ return; }
+      window.location.href = "/?id=" + (currentPokemon + 1);
       break;
     case "/":
       if(document.activeElement === searchbar_input){ return; }
