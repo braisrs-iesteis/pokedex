@@ -1,0 +1,195 @@
+* {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  color: white;
+}
+#search_panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 10vh 10wh;
+  z-index: 5;
+}
+#search_panel::after {
+  content: "";
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  margin: 0 auto;
+  width: 440px;
+  height: 180px;
+  background-position: center top;
+  background-size: 100% auto;
+  background-image: url("/title.png");
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+#search_panel::before {
+  content: "";
+  position: fixed;
+  margin: 25.5vh 22% 0 22%;
+  border-radius: 50px;
+  top: 0;
+  left: 0;
+  width: 56%;
+  z-index: -1;
+  background-color: #ffffff;
+}
+.search_panel_collapsed::before {
+  height: 15vh;
+}
+.search_panel_expanded::before {
+  height: 100%;
+}
+.searchbar_container {
+  display: flex;
+  flex-direction: row;
+  margin: 30vh 25% 0 25%;
+  height: 40px;
+  padding: 5px;
+  border-radius: 40px;
+  border: 1px solid #dadce0;
+  box-shadow: 0px 3px 10px 0px rgba(31, 31, 31, 0.16);
+}
+.searchbar_container:hover {
+  box-shadow: 0px 3px 10px 0px rgba(31, 31, 31, 0.32);
+  cursor: text;
+}
+.searchbar_container_hover {
+  box-shadow: 0px 3px 10px 0px rgba(31, 31, 31, 0.32);
+}
+.searchbar_padding {
+  width: 20px;
+}
+#searchbar_input {
+  font-size: x-large;
+  height: 40px;
+  width: 100%;
+  overflow-x: hidden;
+  border: none;
+  background-color: transparent;
+  color: black;
+}
+#searchbar_input:focus {
+  outline: none;
+}
+#search_result {
+  border: 1px solid #dadce0;
+  border-radius: 30px;
+  height: 100%;
+  width: auto;
+  margin: 4.5vh 25% 0 25%;
+  padding: 20px 25px 0 25px;
+  box-shadow: 0px 3px 10px 0px rgba(31, 31, 31, 0.08);
+}
+#search_result > div {
+  height: 55%;
+  overflow-y: auto;
+}
+.search_result_item {
+  padding: 10px 0 10px 10px;
+  display: block;
+  color: black;
+  font-size: large;
+}
+.search_result_item:nth-child(even) {
+  background-color: #999999;
+  color: white;
+}
+@keyframes backgroundScroll {
+  from { background-position: 0 0; }
+  to   { background-position: 28px 0px; }
+}
+#background {
+  height: 0;
+  width: 0;
+}
+#background::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23444' fill-opacity='0.4' fill-rule='nonzero'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  animation: backgroundScroll 1s linear infinite;
+}
+#main {
+  min-height: 100vh;
+  background-color: #494949;
+  width: 650px;
+  margin: 0 auto;
+}
+#title_container {
+  width: 100%;
+  height: 166px;
+}
+#title {
+  position: fixed;
+  top: -60px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color: #494949;
+  text-wrap: nowrap;
+  font-size: 7rem;
+  font-family: "Oswald";
+  text-align: center;
+  padding: 50px 20px 20px 20px;
+  border-radius: 60px;
+}
+#sprite_main {
+  display: block;
+  margin: 0 auto 0 auto;
+  height: 220px;
+  width: auto;
+}
+#types_container {
+  height: 28px;
+  margin: 20px auto 20px auto;
+  width: fit-content;
+}
+#types_container > span {
+  font-size: x-large;
+  margin: 5px;
+  padding: 5px;
+}
+#pokemon_id {
+  text-align: center;
+  height: 20px;
+}
+#table {
+  border-radius: 25px;
+  border: 3px, solid, wheat;
+  margin: 20px auto 20px auto;
+  width: 300px;
+  overflow: hidden;
+}
+#table * {
+  color: #444;
+  font-weight: bold;
+}
+#table > div > div {
+  display: inline-block;
+}
+#table > div > div:nth-child(1) {
+  padding: 5px 15px 5px 20px;
+  width: 160px;
+  border-right: thick solid wheat;
+}
+#table > div > div:nth-child(2) {
+  margin-left: 10px;
+  color: #b6b6b6;
+}
+#sprites_container {
+  width: fit-content;
+  margin: 0 auto 0 auto;
+}
+#sprites_container > img {
+  margin: 0 15px;
+}

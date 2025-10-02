@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/style.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+  <title>Pokedex</title>
+</head>
+<body>
+  <div id="background"></div>
+  <div id="search_panel" class="search_panel_collapsed" style="display: none;">
+    <div class="searchbar_container">
+      <div class="searchbar_padding"></div>
+      <input type="text" placeholder="search for pokemon" id="searchbar_input">
+      <div class="searchbar_padding"></div>
+    </div>
+    <div id="search_result" style="display: none;"></div>
+  </div>
+  <div id="main">
+    <div id="title_container">
+      <h1 id="title"></h1>
+    </div>
+    <img id="sprite_main"/>
+    <div id="types_container"></div>
+    <div id="pokemon_id"></div>
+    <div id="table">
+      <div>
+        <div style="background-color: #9EE865;">HP</div>
+        <div id="stat_hp"></div>
+      </div>
+      <div>
+        <div style="background-color: #F5DE69;">ATTACK</div>
+        <div id="stat_attack"></div>
+      </div>
+      <div>
+        <div style="background-color: #F09A65;">DEFENSE</div>
+        <div id="stat_defense"></div>
+      </div>
+      <div>
+        <div style="background-color: #66D8F6;">SPECIAL-ATTACK</div>
+        <div id="stat_special-attack"></div>
+      </div>
+      <div>
+        <div style="background-color: #899EEA;">SPECIAL-DEFENSE</div>
+        <div id="stat_special-defense"></div>
+      </div>
+      <div>
+        <div style="background-color: #E46CCA;">SPEED</div>
+        <div id="stat_speed"></div>
+      </div>
+    </div>
+    <div id="sprites_container">
+      <img id="sprite_front"/>
+      <img id="sprite_back"/>
+    </div>
+    <!-- <a>SOUNDS</a> -->
+  </div>
+</body>
+<script>
+"use strict";
+let currentPokemon = -1;
+let searchMenuIsVisible = false;
+
+const main                = document.getElementById("main");
+const pokemon_id          = document.getElementById("pokemon_id");
+const search_panel        = document.getElementById("search_panel");
+const searchbar_container = document.getElementsByClassName("searchbar_container")[0];
+const searchbar_input     = document.getElementById("searchbar_input");
+const title               = document.getElementById("title");
+const types_container     = document.getElementById("types_container");
+
+var POKEMONS = [];
+fetch("/pokemons.json").then(async (p) => {
+  return p.json();
+}).then((json) => {
+  POKEMONS = json
+});
+
+const POKEMON_TYPES_COLORS = {
+  BUG:      "#91A119",
+  DARK:     "#624D4E",
+  DRAGON:   "#5060E1",
+  ELECTRIC: "#FAC000",
+  FAIRY:    "#EF70EF",
+  FIGHTING: "#FF8000",
+  FIRE:     "#E62829",
+  FLYING:   "#81B9EF",
+  GHOST:    "#704170",
+  GRASS:    "#3FA129",
+  GROUND:   "#915121",
+  ICE:      "#3DCEF3",
+  NORMAL:   "#9FA19F",
+  POISON:   "#9141CB",
+  PSYCHIC:  "#EF4179",
+  ROCK:     "#AFA981",
+  STEEL:    "#60A1B8",
+  WATER:    "#2980EF"
+};
+
+function populatePokemonSearch(pokemons){
+  search_result.innerHTML = "";
+  const container = document.createElement("div");
+
+  pokemons.forEach((p) => {
+    const a = document.createElement("a");
+    const name = String(p[1]).charAt(0).toUpperCase() + String(p[1]).slice(1);
+    a.innerHTML = p[0] + " " + name;
+    a.classList = "search_result_item";
+    a.href = "/?id=" + p[0].replace(/^#0*(\d+)$/, "$1");
+    container.appendChild(a);
+  });
+
+  search_result.appendChild(container);
+}
+
+function fuzzySearch(search){
+  return POKEMONS.filter(p => {
+    const name = p[1]
+    let i_search = 0;
+    let name_split = name.split("");
+    let search_split = search.split("");
+    for(let i = 0; i < name_split.length; ++i){
+      if(name_split[i] === search_split[i_search]){
+        if(++i_search === search_split.length){
+          return true;
+        }
+      }
+    }
+    return false;
+  });
+}
+
+function reload(){
+  const v = searchbar_input.value;
+  populatePokemonSearch(v === "" ? POKEMONS : fuzzySearch(v.toLowerCase()));
+}
+
+searchbar_input.addEventListener("keyup", reload)
+searchbar_input.addEventListener("click", reload)
+
+searchbar_container.addEventListener("click", () => {
+  if(document.activeElement === searchbar_input){ return; }
+  searchbar_input.focus();
+  reload();
+})
+
+searchbar_input.addEventListener("focusin", () => {
+  searchbar_container.classList.add("searchbar_container_hover");
+  search_panel.classList.remove("search_panel_collapsed");
+  search_panel.classList.add("search_panel_expanded");
+  search_result.style.display = "block";
+})
+
+searchbar_input.addEventListener("focusout", () => {
+  searchbar_container.classList.remove("searchbar_container_hover");
+})
+
+async function populatePokemonContent(pokemonId){
+  try{
+    populatePokemonContentWrapped(pokemonId);
+  }catch(e){
+    console.error(e)
+  }
+}
+
+async function populatePokemonContentWrapped(pokemonId){
+  currentPokemon = pokemonId;
+  const j = await (await fetch("/api/" + pokemonId + ".json")).json();
+
+  title.innerHTML = j.name.toUpperCase();
+  pokemon_id.innerHTML = "#" + j.id;
+  for(var k in j.stats){
+    document.getElementById("stat_" + k).innerHTML = j.stats[k];
+  }
+  types_container.innerHTML = "";
+  j.types.forEach(v => {
+    const span = document.createElement("span");
+    span.innerHTML = v.toUpperCase();
+    span.style.backgroundColor = POKEMON_TYPES_COLORS[v.toUpperCase()];
+    types_container.append(span);
+  });
+
+  fetch("/api/" + pokemonId + "/images.json").then(r => r.json()).then((j) => {
+    if(pokemonId != currentPokemon){ return; }
+    for(k in j){
+      document.getElementById("sprite_" + k).src = j[k];
+    }
+  })
+
+  const url = new URL(window.location.href);
+  url.searchParams.set("id", pokemonId.toString());
+  window.history.pushState({}, "", url);
+}
+
+document.addEventListener("keyup", (e) => {
+  switch(e.key) {
+    case "Escape":
+      if(searchMenuIsVisible){ return; }
+      window.location.href = "/";
+      break;
+    case "ArrowLeft":
+      if(currentPokemon == -1 || currentPokemon === 1){ return; }
+      window.location.href = "/?id=" + (currentPokemon - 1);
+      break;
+    case "ArrowRight":
+      if(currentPokemon == -1 || currentPokemon === POKEMONS.length){ return; }
+      break;
+    case "/":
+      if(document.activeElement === searchbar_input){ return; }
+      searchbar_input.focus();
+      break;
+  }
+});
+
+(async () => {
+  const url = new URL(window.location.href);
+  const pokemonId = url.searchParams.get("id");
+  if(pokemonId){
+    const pokemonIdNumber = Number(pokemonId);
+    if(pokemonIdNumber > 0){
+      populatePokemonContent(pokemonIdNumber);
+      return;
+    } else {
+      url.searchParams.delete("id");
+      window.history.pushState({}, "", url);
+    }
+  }
+  searchMenuIsVisible = true;
+  main.style.display = "none";
+  search_panel.style.display = "block";
+  populatePokemonSearch(POKEMONS);
+})();
+
+</script>
+</html>
