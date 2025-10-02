@@ -120,7 +120,7 @@ async function routeTitleImg(res){
   return res.end(await (await fetch(url)).arrayBuffer());
 }
 
-const server = require("http").createServer(async (req, res) => {
+async function server(req, res){
   const url = req.url.split("?")[0]
 
   if(req.method != "GET"){
@@ -167,8 +167,8 @@ const server = require("http").createServer(async (req, res) => {
       res.end("Server error");
     }
   }
-});
+}
 
-server.listen(PORT, () => {
+require("http").createServer(server).listen(PORT, () => {
   console.log("Server running at http://localhost:" + PORT + "/");
 });
